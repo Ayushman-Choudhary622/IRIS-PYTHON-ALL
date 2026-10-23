@@ -1,0 +1,56 @@
+# ==============================================================================
+#  PROJECT IRIS UNIVERSAL - GIT IGNORE
+# ==============================================================================
+
+# Python Virtual Environments (Extremely large ~1.6GB)
+.venv/
+venv/
+env/
+ENV/
+**/.venv/
+**/venv/
+**/env/
+
+# Node Modules & Package Manager Caches (~1.2GB)
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Next.js Build Outputs & Caches
+.next/
+**/.next/
+out/
+build/
+dist/
+
+# Python Bytecode, Caches & Logs
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+*.log
+
+# Accidental Nested Duplicate Directories inside IRIS KIOSK PPT
+IRIS KIOSK PPT/IRIS UNIVERSAL/
+IRIS KIOSK PPT/IRIS WEBSITE FINALE/
+IRIS KIOSK PPT/.venv/
+
+# OS-Specific Files & Thumbnails
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
