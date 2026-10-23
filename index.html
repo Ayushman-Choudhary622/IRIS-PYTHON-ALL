@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIS Universal • 3-Sec Auto Clicker & Ultra-HD ASCII Suite</title>
+    <meta name="description" content="High-performance Windows Python Auto Clicker with 3-second default interval, global hotkeys, anti-detection jitter, and Ultra-HD Braille ASCII Art.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0b10;
+            --bg-card: #12141f;
+            --bg-card-hover: #191b2b;
+            --border-glow: rgba(124, 58, 237, 0.25);
+            --border-cyan: rgba(6, 182, 212, 0.3);
+            --primary: #7c3aed;
+            --primary-glow: rgba(124, 58, 237, 0.5);
+            --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.6);
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --terminal-bg: #090a0f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', -apple-system, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 70%, rgba(6, 182, 212, 0.12) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            background: rgba(10, 11, 16, 0.75);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), var(--primary));
+            box-shadow: 0 0 12px var(--cyan-glow);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--cyan);
+            transform: translateY(-1px);
+        }
+
+        .btn-github {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2563eb, var(--primary));
+            color: #fff;
+            padding: 0.55rem 1.2rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: all 0.3s;
+        }
+
+        .btn-github:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.7);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 4rem auto 2rem;
+            padding: 0 1.5rem;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.4rem 1.2rem;
+            border-radius: 9999px;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid var(--border-glow);
+            color: #c084fc;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #ffffff 40%, #06b6d4 80%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-muted);
+            max-width: 780px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--cyan), #3b82f6);
+            color: #fff;
+            padding: 0.85rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            box-shadow: 0 4px 20px var(--cyan-glow);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.8);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0.85rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Interactive Terminal Showcase */
+        .terminal-container {
+            max-width: 1050px;
+            margin: 3.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .terminal-box {
+            background: var(--terminal-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(6, 182, 212, 0.15);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #13151f;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tdot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .tdot.red { background: #ff5f56; }
+        .tdot.yellow { background: #ffbd2e; }
+        .tdot.green { background: #27c93f; }
+
+        .terminal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .t-btn {
+            background: #232738;
+            color: #cbd5e1;
+            border: 0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .t-btn:hover, .t-btn.active {
+            background: var(--cyan);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.25;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--cyan);
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+            min-height: 280px;
+        }
+
+        /* Features Grid */
+        .features-section {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-cyan);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.1);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Hotkey Table */
+        .hotkeys-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.08));
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+        }
+
+        .hotkeys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .hotkey-item {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .key-badge {
+            background: #232738;
+            color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .hotkey-desc h4 {
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .hotkey-desc p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Code Viewer Section */
+        .code-section {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: -1px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 0;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px 10px 0 0;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--bg-card);
+            color: var(--cyan);
+            border-color: rgba(6, 182, 212, 0.3);
+            font-weight: 700;
+        }
+
+        .code-display {
+            background: var(--bg-card);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 0 16px 16px 16px;
+            padding: 1.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.5;
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #232738;
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: #08090e;
+        }
+
+        footer a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem; }
+            .hero { margin-top: 2.5rem; }
+            .terminal-body { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <div class="logo-dot"></div>
+            <span>IRIS UNIVERSAL</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#hotkeys" class="nav-link">Hotkeys</a>
+            <a href="#terminal" class="nav-link">ASCII Studio</a>
+            <a href="#code" class="nav-link">Code Files</a>
+            <a href="https://github.com/Ayushman-Choudhary622/IRIS-PYTHON-ALL" target="_blank" class="btn-github">
+                <span>★ GitHub</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="badge">⚡ Autonomous Windows Automation</div>
+        <h1>IRIS 3-Second Universal Auto Clicker</h1>
+        <p>A precision-engineered, multi-threaded Windows Auto Clicker that starts clicking every 3 seconds automatically upon launch. Features global hotkeys, anti-detection jitter, and Ultra-HD subpixel Braille vector ASCII art.</p>
+        <div class="hero-actions">
+            <a href="https://github.com/Ayushman-Choudhary622/IRIS-PYTHON-ALL/archive/refs/heads/main.zip" class="btn-primary">
+                <span>⬇ Download Repository</span>
+            </a>
+            <a href="#terminal" class="btn-secondary">
+                <span>👁️ Live ASCII Preview</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Terminal ASCII Art Previewer -->
+    <section class="terminal-container" id="terminal">
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <span class="tdot red"></span>
+                    <span class="tdot yellow"></span>
+                    <span class="tdot green"></span>
+                </div>
+                <div class="terminal-title">iris_ascii.py • Ultra-HD Subpixel Vector Braille</div>
+                <div class="terminal-controls">
+                    <button class="t-btn active" id="btn-theme-iris" onclick="setTheme('iris')">Electric Cyan</button>
+                    <button class="t-btn" id="btn-theme-claude" onclick="setTheme('claude')">Claude Coral</button>
+                    <button class="t-btn" id="btn-theme-cyber" onclick="setTheme('cyberpunk')">Cyberpunk</button>
+                    <button class="t-btn" id="btn-theme-matrix" onclick="setTheme('matrix')">Matrix</button>
+                    <button class="t-btn" id="btn-toggle-sphere" onclick="toggleSphere()">Sphere: ON</button>
+                </div>
+            </div>
+            <div class="terminal-body" id="ascii-output">
+Loading IRIS Ultra-HD ASCII Art...
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>Engineered For Performance & Stealth</h2>
+            <p style="color: var(--text-muted);">Built 100% on pure Python standard library and native Windows win32 ctypes.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>Auto-Start 3-Sec Engine</h3>
+                <p>Arms and begins auto-clicking every 3.0 seconds the instant you double-click <code>run.bat</code>. No initial setup or configuration required.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⌨️</div>
+                <h3>Global Windows Hotkeys</h3>
+                <p>Toggle ON/OFF using <b>F6</b>, lock fixed screen coordinates using <b>F7</b>, or hit <b>ESC</b> for an emergency halt — from any application or game.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⏱️</div>
+                <h3>Micro-Timing Customization</h3>
+                <p>Set custom millisecond and second delays, with 1-click presets for 100ms, 1s, 3s, 5s, and 10s intervals.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3>Anti-Detection Jitter</h3>
+                <p>Randomizes click intervals by ±0.2 seconds to simulate authentic human input variance and avoid anti-bot flags.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📍</div>
+                <h3>Dual Targeting Modes</h3>
+                <p>Choose between dynamic real-time cursor following or precision coordinate locking (X, Y) with visual picker.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <h3>Zero External Dependencies</h3>
+                <p>Requires zero <code>pip install</code>. Runs instantly out of the box on any Windows PC with Python 3.</p>
+            </div>
+        </div>
+
+        <!-- Hotkeys Card -->
+        <div class="hotkeys-card" id="hotkeys">
+            <h3 style="font-size: 1.5rem; color: #fff;">⌨️ Global Hotkeys Reference</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Keyboard shortcuts are polled at the system level and respond even when minimized or backgrounded.</p>
+            <div class="hotkeys-grid">
+                <div class="hotkey-item">
+                    <span class="key-badge">F6</span>
+                    <div class="hotkey-desc">
+                        <h4>Activate / Deactivate</h4>
+                        <p>Toggles the clicker engine between ACTIVE and PAUSED instantly.</p>
+                    </div>
+                </div>
+                <div class="hotkey-item">
+                    <span class="key-badge">F7</span>
+                    <div class="hotkey-desc">
+                        <h4>Lock Coordinates</h4>
+                        <p>Hover cursor anywhere on screen and press F7 to capture target X & Y.</p>
+                    </div>
+                </div>
+                <div class="hotkey-item">
+                    <span class="key-badge">ESC</span>
+                    <div class="hotkey-desc">
+                        <h4>Emergency Halt</h4>
+                        <p>Kills running click tasks immediately to guarantee safety.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Viewer Section -->
+    <section class="code-section" id="code">
+        <div class="section-header">
+            <h2>Core File Suite</h2>
+            <p style="color: var(--text-muted);">Inspect or copy the ready-to-run automation scripts.</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('bat')">run.bat</button>
+            <button class="tab" onclick="switchTab('clicker')">autoclicker.py</button>
+            <button class="tab" onclick="switchTab('cli')">cli_clicker.py</button>
+        </div>
+
+        <div class="code-display" id="code-content">
+            <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            <code id="code-text">@echo off
+title IRIS 3-Sec Universal Auto Clicker
+set PYTHONIOENCODING=utf-8
+chcp 65001 >nul 2>&1
+mode con: cols=120 lines=38 >nul 2>&1
+cd /d "%~dp0"
+
+python "%~dp0autoclicker.py"
+
+if %ERRORLEVEL% NEQ 0 (
+    echo [!] Python failed to launch with standard 'python'. Trying 'py'...
+    py "%~dp0autoclicker.py"
+)
+
+pause</code>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Built with precision by <a href="https://github.com/Ayushman-Choudhary622" target="_blank">Ayushman Choudhary</a> • <a href="https://github.com/Ayushman-Choudhary622/IRIS-PYTHON-ALL" target="_blank">IRIS-PYTHON-ALL Repository</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.7;">Deployed via GitHub Pages</p>
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        const fullArt = `         ⣀⣠⣤⣶⣶⣿⡿⣿⡿⢿⣿⣶⣶⣤⣄⡀
+      ⣠⣴⣿⠿⠛⢉⣡⣤⣤⡄⣿⡇⣴⣤⣤⣉⡉⠛⠿⣷⣦⣀
+    ⣠⣾⠿⠋⣠⣴⠿⠛⠋⠉⢹⡇⢿⣧⣤⣬⣭⣙⡛⢷⣦⣌⠙⢿⣷⣄                                                  ⢀⣀⣀⡀
+  ⢠⣾⡿⢁⣴⡿⠛⠁ ⢀⣀⣤⣤⣤⣴⣤⣤⣤⣍⣉⡛⣷⣾⠻⣷⣄⠙⢿⣷⡀       ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣦⣄    ⣾⣿⣿⣿⣿⡇    ⣠⣶⣿⣿⣿⣿⣿⣿⣿⣷⣶⣄
+ ⣰⣿⠏⢠⣾⠏⣀⣤⣶⣿⣿⠿⠛⣋⣩⣭⣭⣍⣙⠻⢿⣿⣿⣷⣤⡈⠻⣷⡀⢻⣿⡄      ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀  ⣿⣿⣿⣿⣿⡇  ⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀
+⢠⣿⡏⢠⣿⣷⣿⠟⢫⣿⠟⢡⣶⣿⡿⠟⠛⠻⠿⣿⣿⣦⡙⢿⣯⡙⠿⣷⣿⣿⡄⢻⣿⡀     ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿    ⠉⢿⣿⣿⣿⣿⣧  ⣿⣿⣿⣿⣿⡇  ⣾⣿⣿⣿⣿⣿   ⠘⠿⠿⠿⠿⢿⠇
+⣾⣿⣠⣾⠿⠋ ⢠⣿⡏⣰⣿⡟⢁⣴⣾⣿⣿⠃ ⠙⣿⣿⡄⢿⣷ ⠈⠙⢿⣷⣌⣿⣇     ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿     ⣼⣿⣿⣿⣿⡟  ⣿⣿⣿⣿⣿⡇  ⢹⣿⣿⣿⣿⣿⣶⣤⣀⣀
+⣿⣿⣿⣥⣤⣤⣤⣼⣿⣤⣿⣿⣤⣾⣿⣿⣿⣿⣶⣾⣧⣼⣿⣿⣼⣿⣧⣤⣤⣤⣽⣿⣿⣿     ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣶⣶⣶⣶⣿⣿⣿⣿⣿⡿⠁  ⣿⣿⣿⣿⣿⡇   ⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄
+⣿⡿⣿⣍⠉⠉⠉⢹⣿⡍⣿⣿⡍⢻⣿⣿⣿⣿⣿⣿⠏⣹⣿⡟⢹⣿⠋⠉⠉⢉⣽⣿⣿⣿     ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋    ⣿⣿⣿⣿⣿⡇     ⠉⠛⠻⠿⢿⣿⣿⣿⣿⣿⣿⣷⡄
+⢻⣿⠈⢿⣿⣦⣄⠈⢿⣷⡘⢿⣿⣦⡉⠛⠿⠿⠛⣁⣴⣿⡟⢡⣿⡟ ⣠⣴⣿⡟⢁⣿⡏     ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿ ⠹⣿⣿⣿⣿⣿⣄     ⣿⣿⣿⣿⣿⡇  ⣠⣤⣤⣤⣤⣄   ⠉⢿⣿⣿⣿⣿⣿
+⠘⣿⣇⠘⣿⡝⠻⢿⣮⣿⣿⣤⡙⠿⣿⣿⣿⣿⣿⡿⠟⣋⣴⣿⣯⣶⣿⠟⣹⡿⠁⣼⣿⠁     ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿  ⠙⣿⣿⣿⣿⣿⣦    ⣿⣿⣿⣿⣿⡇  ⢹⣿⣿⣿⣿⣿⣤⣀⣀⣠⣿⣿⣿⣿⣿⡟
+ ⠘⣿⣦⠘⢿⣆ ⢉⣻⡿⠿⣿⣷⣶⣤⣤⣤⣤⣶⣿⣿⠿⠟⣫⡿⢋⣴⡟⢁⣼⡿⠃      ⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿   ⠘⢿⣿⣿⣿⣿⣧⡀  ⣿⣿⣿⣿⣿⡇   ⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟
+  ⠈⢿⣷⣄⠻⣷⣜⡻⠿⢶⣤⣄⣉⣉⣉⡉⠉⠉⢀⣠⣴⠾⢋⣴⡿⠋⣠⣾⡟⠁       ⠿⠿⠿⠿⠿⠇  ⠸⠿⠿⠿⠿⠿    ⠈⠿⠿⠿⠿⠿⠷  ⠻⠿⠿⠿⠿⠇     ⠉⠛⠿⠿⠿⠿⠿⠿⠟⠋⠁
+    ⠙⢿⣷⣄⡙⠻⣶⣤⣌⣉⡉⠉⣿⡇⣾⣟⣛⣭⣴⡾⠟⢉⣠⣾⡿⠋
+      ⠉⠻⢿⣶⣤⣈⣙⠛⠛⠃⣿⡇⠛⠛⠛⣉⣡⣴⣾⡿⠟⠁
+         ⠈⠙⠛⠿⠿⢿⣿⣿⣿⣿⡿⠿⠟⠛⠉⠁
+
+                  ─── [ IRIS UNIVERSAL • AI INTELLIGENCE SYSTEM ] ───`;
+
+        const textOnlyArt = `                                         ⢀⣀⣀⡀
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣦⣄    ⣾⣿⣿⣿⣿⡇    ⣠⣶⣿⣿⣿⣿⣿⣿⣿⣷⣶⣄
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀  ⣿⣿⣿⣿⣿⡇  ⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿    ⠉⢿⣿⣿⣿⣿⣧  ⣿⣿⣿⣿⣿⡇  ⣾⣿⣿⣿⣿⣿   ⠘⠿⠿⠿⠿⢿⠇
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿     ⣼⣿⣿⣿⣿⡟  ⣿⣿⣿⣿⣿⡇  ⢹⣿⣿⣿⣿⣿⣶⣤⣀⣀
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣶⣶⣶⣶⣿⣿⣿⣿⣿⡿⠁  ⣿⣿⣿⣿⣿⡇   ⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋    ⣿⣿⣿⣿⣿⡇     ⠉⠛⠻⠿⢿⣿⣿⣿⣿⣿⣿⣷⡄
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿ ⠹⣿⣿⣿⣿⣿⣄     ⣿⣿⣿⣿⣿⡇  ⣠⣤⣤⣤⣤⣄   ⠉⢿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿  ⠙⣿⣿⣿⣿⣿⣦    ⣿⣿⣿⣿⣿⡇  ⢹⣿⣿⣿⣿⣿⣤⣀⣀⣠⣿⣿⣿⣿⣿⡟
+⣿⣿⣿⣿⣿⡇  ⢸⣿⣿⣿⣿⣿   ⠘⢿⣿⣿⣿⣿⣧⡀  ⣿⣿⣿⣿⣿⡇   ⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟
+⠿⠿⠿⠿⠿⠇  ⠸⠿⠿⠿⠿⠿    ⠈⠿⠿⠿⠿⠿⠷  ⠻⠿⠿⠿⠿⠇     ⠉⠛⠿⠿⠿⠿⠿⠿⠟⠋⠁
+
+     ─── [ IRIS UNIVERSAL • AI INTELLIGENCE SYSTEM ] ───`;
+
+        let currentSphere = true;
+        let currentThemeColor = '#06b6d4';
+
+        function renderArt() {
+            const out = document.getElementById('ascii-output');
+            out.textContent = currentSphere ? fullArt : textOnlyArt;
+            out.style.color = currentThemeColor;
+            out.style.textShadow = `0 0 10px ${currentThemeColor}66`;
+        }
+
+        function setTheme(theme) {
+            document.querySelectorAll('.t-btn').forEach(b => {
+                if(b.id !== 'btn-toggle-sphere') b.classList.remove('active');
+            });
+            if (theme === 'iris') {
+                currentThemeColor = '#06b6d4';
+                document.getElementById('btn-theme-iris').classList.add('active');
+            } else if (theme === 'claude') {
+                currentThemeColor = '#f97316';
+                document.getElementById('btn-theme-claude').classList.add('active');
+            } else if (theme === 'cyberpunk') {
+                currentThemeColor = '#ec4899';
+                document.getElementById('btn-theme-cyber').classList.add('active');
+            } else if (theme === 'matrix') {
+                currentThemeColor = '#10b981';
+                document.getElementById('btn-theme-matrix').classList.add('active');
+            }
+            renderArt();
+        }
+
+        function toggleSphere() {
+            currentSphere = !currentSphere;
+            const btn = document.getElementById('btn-toggle-sphere');
+            btn.textContent = currentSphere ? 'Sphere: ON' : 'Sphere: OFF';
+            btn.classList.toggle('active', !currentSphere);
+            renderArt();
+        }
+
+        // Tab Switching for Code display
+        const codeFiles = {
+            bat: `@echo off
+title IRIS 3-Sec Universal Auto Clicker
+set PYTHONIOENCODING=utf-8
+chcp 65001 >nul 2>&1
+mode con: cols=120 lines=38 >nul 2>&1
+cd /d "%~dp0"
+
+python "%~dp0autoclicker.py"
+
+if %ERRORLEVEL% NEQ 0 (
+    echo [!] Python failed to launch with standard 'python'. Trying 'py'...
+    py "%~dp0autoclicker.py"
+)
+
+pause`,
+            clicker: `# IRIS Auto Clicker (autoclicker.py snippet)
+import sys, os, time, threading, ctypes
+import tkinter as tk
+
+user32 = ctypes.windll.user32
+MOUSEEVENTF_LEFTDOWN = 0x0002
+MOUSEEVENTF_LEFTUP = 0x0004
+VK_F6 = 0x75
+
+# Arms and clicks every 3.0 seconds automatically
+def click_worker(interval=3.0):
+    while True:
+        user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+        time.sleep(0.01)
+        user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+        time.sleep(interval)`,
+            cli: `# IRIS CLI Clicker (cli_clicker.py snippet)
+import sys, time, threading, ctypes
+user32 = ctypes.windll.user32
+
+def main():
+    print("[*] State: ACTIVE (Auto-clicking every 3.0s started)")
+    print("[*] Hotkey: [F6] Pause/Resume  |  [ESC] Halt")
+    # Native Windows message & polling loop`
+        };
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('code-text').textContent = codeFiles[type];
+        }
+
+        function copyCode() {
+            const text = document.getElementById('code-text').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy Code', 2000);
+            });
+        }
+
+        // Initial Render
+        renderArt();
+    </script>
+</body>
+</html>
