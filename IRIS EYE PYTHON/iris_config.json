@@ -5,7 +5,7 @@
   "min_closed_frames": 2,
   "cooldown_sec": 0.38,
   "calibrated_threshold": null,
-  "mouse_enabled": false,
+  "mouse_enabled": true,
   "mirror_view": true,
   "sound_feedback": true,
   "white_canvas_mode": true
