@@ -10,17 +10,18 @@
   // -------------------------------------------------------------------------
   // 1. CONFIGURATION & STATE
   // -------------------------------------------------------------------------
-  const BUILD_VERSION = Date.now();
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+  
   const CONFIG = {
     totalFramesDark: 275,
     totalFramesLight: 276,
-    // Primary: Directly load user's raw PNG frames with cache busting
-    darkFramePath: (i) => `Dark theme frames/ezgif-frame-${String(i).padStart(3, '0')}.png?v=${BUILD_VERSION}`,
-    lightFramePath: (i) => `Light theme frames/ezgif-frame-${String(i).padStart(3, '0')}.png?v=${BUILD_VERSION}`,
-    // Fallback: WebP high-res frames with cache busting
-    darkFramePathWebp: (i) => `frames_dark_opt/frame_${String(i).padStart(3, '0')}.webp?v=${BUILD_VERSION}`,
-    lightFramePathWebp: (i) => `frames_light_opt/frame_${String(i).padStart(3, '0')}.webp?v=${BUILD_VERSION}`,
-    lerpFactor: 0.12,
+    // Primary: WebP high-performance frames (44KB each vs 500KB PNGs — 10x faster & 90% memory reduction)
+    darkFramePath: (i) => `frames_dark_opt/frame_${String(i).padStart(3, '0')}.webp`,
+    lightFramePath: (i) => `frames_light_opt/frame_${String(i).padStart(3, '0')}.webp`,
+    // Fallback: Raw PNG frames if WebP fails
+    darkFramePathPng: (i) => `Dark theme frames/ezgif-frame-${String(i).padStart(3, '0')}.png`,
+    lightFramePathPng: (i) => `Light theme frames/ezgif-frame-${String(i).padStart(3, '0')}.png`,
+    lerpFactor: isMobile ? 0.2 : 0.12,
   };
 
   const savedTheme = localStorage.getItem('iris_theme') || 'light';
@@ -43,12 +44,14 @@
     virtualRoomLightOn: true,
     currentWizardStep: 1,
     selectedComponent: 'xiao',
+    inactiveThemeQueued: false,
   };
 
   // -------------------------------------------------------------------------
   // 2. WEB AUDIO SFX SYNTHESIZER
   // -------------------------------------------------------------------------
   let audioCtx = null;
+  let lastTickTime = 0;
 
   function initAudio() {
     if (!audioCtx) {
@@ -88,6 +91,10 @@
   }
 
   function playScrollTick() {
+    // Throttle scroll ticks so rapid mobile touch drags don't flood Web Audio
+    const now = performance.now();
+    if (now - lastTickTime < 85) return;
+    lastTickTime = now;
     playTone(1400, 'triangle', 0.02, 0.012);
   }
 
@@ -123,86 +130,102 @@
   }
 
   // -------------------------------------------------------------------------
-  // 4. ASSET PRELOADER ENGINE
+  // 4. ASSET PRELOADER ENGINE (OPTIMIZED FOR ZERO SLUGGISHNESS)
   // -------------------------------------------------------------------------
   const preloader = document.getElementById('preloader');
   const preloaderBar = document.getElementById('preloader-bar');
   const preloaderText = document.getElementById('preloader-text');
 
-  function preloadFrames() {
-    const totalToLoad = CONFIG.totalFramesDark + CONFIG.totalFramesLight;
-    let totalLoadedCount = 0;
-
-    function onImageLoad() {
-      totalLoadedCount++;
-      const percent = Math.floor((totalLoadedCount / totalToLoad) * 100);
-      
-      if (preloaderBar) preloaderBar.style.width = percent + '%';
-      if (preloaderText) preloaderText.textContent = `Buffering 3D motion frames... ${percent}%`;
-
-      const activeLoaded = state.theme === 'light' ? state.lightLoaded : state.darkLoaded;
-      if (activeLoaded >= 25 && !state.isReady) {
-        state.isReady = true;
-        dismissPreloader();
-        requestAnimationFrame(renderLoop);
-      }
-    }
-
-    function queueDarkFrames() {
-      for (let i = 1; i <= CONFIG.totalFramesDark; i++) {
-        const img = new Image();
-        img.src = CONFIG.darkFramePath(i);
-        img.onload = () => {
+  function queueDarkFrames() {
+    if (state.darkImages.length > 0) return;
+    for (let i = 1; i <= CONFIG.totalFramesDark; i++) {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        state.darkLoaded++;
+        checkPreloadProgress();
+      };
+      img.onerror = () => {
+        // Fallback to raw PNG if webp missing
+        img.onerror = () => {
           state.darkLoaded++;
-          onImageLoad();
+          checkPreloadProgress();
         };
-        img.onerror = () => {
-          // Automatic seamless fallback to WebP
-          img.onerror = () => {
-            state.darkLoaded++;
-            onImageLoad();
-          };
-          img.onload = () => {
-            state.darkLoaded++;
-            onImageLoad();
-          };
-          img.src = CONFIG.darkFramePathWebp(i);
-        };
-        state.darkImages.push(img);
-      }
+        img.src = CONFIG.darkFramePathPng(i);
+      };
+      img.src = CONFIG.darkFramePath(i);
+      state.darkImages.push(img);
     }
+  }
 
-    function queueLightFrames() {
-      for (let i = 1; i <= CONFIG.totalFramesLight; i++) {
-        const img = new Image();
-        img.src = CONFIG.lightFramePath(i);
-        img.onload = () => {
+  function queueLightFrames() {
+    if (state.lightImages.length > 0) return;
+    for (let i = 1; i <= CONFIG.totalFramesLight; i++) {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        state.lightLoaded++;
+        checkPreloadProgress();
+      };
+      img.onerror = () => {
+        // Fallback to raw PNG if webp missing
+        img.onerror = () => {
           state.lightLoaded++;
-          onImageLoad();
+          checkPreloadProgress();
         };
-        img.onerror = () => {
-          // Automatic seamless fallback to WebP
-          img.onerror = () => {
-            state.lightLoaded++;
-            onImageLoad();
-          };
-          img.onload = () => {
-            state.lightLoaded++;
-            onImageLoad();
-          };
-          img.src = CONFIG.lightFramePathWebp(i);
-        };
-        state.lightImages.push(img);
-      }
+        img.src = CONFIG.lightFramePathPng(i);
+      };
+      img.src = CONFIG.lightFramePath(i);
+      state.lightImages.push(img);
     }
+  }
 
-    // Prioritize active theme sequence for instantaneous launch
+  function checkPreloadProgress() {
+    const activeTotal = state.theme === 'light' ? CONFIG.totalFramesLight : CONFIG.totalFramesDark;
+    const activeLoaded = state.theme === 'light' ? state.lightLoaded : state.darkLoaded;
+    const percent = Math.min(100, Math.floor((activeLoaded / activeTotal) * 100));
+
+    if (preloaderBar) preloaderBar.style.width = percent + '%';
+    if (preloaderText) preloaderText.textContent = `Buffering 3D motion frames... ${percent}%`;
+
+    // Instant launch threshold: on mobile, 15 frames gives instant interaction; 25 on desktop
+    const readyThreshold = isMobile ? 12 : 25;
+    if (activeLoaded >= readyThreshold && !state.isReady) {
+      state.isReady = true;
+      dismissPreloader();
+      requestAnimationFrame(renderLoop);
+    }
+  }
+
+  function preloadFrames() {
+    // Only queue active theme at startup! Saves ~150MB of RAM and 276 network calls on mobile
     if (state.theme === 'light') {
       queueLightFrames();
-      setTimeout(queueDarkFrames, 60);
+      // Lazy load inactive theme only when idle or after delay
+      const scheduleDark = () => {
+        if (!state.inactiveThemeQueued) {
+          state.inactiveThemeQueued = true;
+          queueDarkFrames();
+        }
+      };
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(scheduleDark, { timeout: 3000 });
+      } else {
+        setTimeout(scheduleDark, 2000);
+      }
     } else {
       queueDarkFrames();
-      setTimeout(queueLightFrames, 60);
+      const scheduleLight = () => {
+        if (!state.inactiveThemeQueued) {
+          state.inactiveThemeQueued = true;
+          queueLightFrames();
+        }
+      };
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(scheduleLight, { timeout: 3000 });
+      } else {
+        setTimeout(scheduleLight, 2000);
+      }
     }
   }
 
@@ -211,17 +234,18 @@
       preloader.classList.add('fade-out');
       setTimeout(() => {
         preloader.style.display = 'none';
-      }, 750);
+      }, 500);
     }
   }
 
+  // Fallback safety timeout: never trap user on mobile
   setTimeout(() => {
     if (!state.isReady) {
       state.isReady = true;
       dismissPreloader();
       requestAnimationFrame(renderLoop);
     }
-  }, 4500);
+  }, isMobile ? 2200 : 3500);
 
   // -------------------------------------------------------------------------
   // 5. MASTER SCROLLY ENGINE (TWO-PHASE CONTINUOUS EXPERIENCE)
@@ -253,7 +277,8 @@
 
   function resizeCanvas() {
     if (!canvas || !ctx) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const isMob = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const dpr = Math.min(window.devicePixelRatio || 1, isMob ? 1.5 : 2);
     const rect = canvas.getBoundingClientRect();
     
     canvas.width = Math.round(rect.width * dpr);
@@ -264,14 +289,42 @@
 
   window.addEventListener('resize', resizeCanvas);
 
+  // Direct touch drag on 3D canvas (Allows swiping to spin wearable model on mobile)
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartFrame = 0;
+
+  if (canvas) {
+    canvas.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartFrame = state.targetFrame;
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+
+      // When horizontal drag is dominant, rotate the 3D model directly
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+        const maxFrames = state.theme === 'light' ? CONFIG.totalFramesLight : CONFIG.totalFramesDark;
+        const frameDelta = -Math.round(dx * 0.45);
+        state.targetFrame = Math.max(0, Math.min(maxFrames - 1, touchStartFrame + frameDelta));
+      }
+    }, { passive: true });
+  }
+
   function updateScroll() {
     if (!heroViewport || !scrubPhase) return;
 
-    const scrubRect = scrubPhase.getBoundingClientRect();
-    const scrubDistance = scrubPhase.offsetHeight;
+    // Relative to heroViewport container so rotation starts immediately on scroll
+    const heroRect = heroViewport.getBoundingClientRect();
+    const scrubDistance = scrubPhase.offsetHeight || (window.innerHeight * 2.2);
     
-    // Top hero title fades out smoothly as scroll starts
-    const traveled = -scrubRect.top;
+    // Top hero title fades out smoothly as scroll starts (0 to 180px)
+    const traveled = -heroRect.top;
     if (heroTopIntro) {
       if (traveled <= 0) {
         heroTopIntro.style.opacity = '1';
@@ -280,13 +333,13 @@
       } else {
         const fadeIntro = Math.max(0, 1 - traveled / 160);
         heroTopIntro.style.opacity = fadeIntro.toFixed(2);
-        heroTopIntro.style.transform = `translateX(-50%) translateY(-${(1 - fadeIntro) * 60}px)`;
+        heroTopIntro.style.transform = `translateX(-50%) translateY(-${(1 - fadeIntro) * 45}px)`;
         heroTopIntro.style.pointerEvents = fadeIntro > 0.05 ? 'auto' : 'none';
       }
     }
 
-    const maxTravel = scrubDistance - window.innerHeight;
-    const phase1Progress = Math.min(1, Math.max(0, traveled / (maxTravel > 0 ? maxTravel : 1)));
+    const maxTravel = Math.max(1, scrubDistance - window.innerHeight);
+    const phase1Progress = Math.min(1, Math.max(0, traveled / maxTravel));
     const maxFrames = state.theme === 'light' ? CONFIG.totalFramesLight : CONFIG.totalFramesDark;
 
     if (phase1Progress < 1) {
@@ -335,8 +388,10 @@
           const target = ZOOM_TARGETS[stepKey] || ZOOM_TARGETS.overview;
 
           if (canvasZoomWrapper) {
+            const isMob = window.innerWidth <= 768;
+            const targetScale = isMob ? Math.min(target.scale, 2.1) : target.scale;
             canvasZoomWrapper.style.transformOrigin = `${target.x}% ${target.y}%`;
-            canvasZoomWrapper.style.transform = `scale(${target.scale})`;
+            canvasZoomWrapper.style.transform = `scale(${targetScale})`;
           }
 
           if (cameraReticle) {
@@ -365,7 +420,19 @@
     }
   }
 
-  window.addEventListener('scroll', updateScroll, { passive: true });
+  // RAF throttled scroll event listener for buttery 60-120 FPS mobile scrolling
+  let scrollTicking = false;
+  function scheduleScrollUpdate() {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        updateScroll();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }
+
+  window.addEventListener('scroll', scheduleScrollUpdate, { passive: true });
 
   function drawFrame(frameIndex) {
     if (!canvas || !ctx) return;
@@ -448,6 +515,13 @@
       
       if (themeLabelText) {
         themeLabelText.textContent = nextTheme === 'light' ? 'Dark' : 'Light';
+      }
+
+      // Ensure target theme frames are loaded
+      if (nextTheme === 'dark' && state.darkImages.length === 0) {
+        queueDarkFrames();
+      } else if (nextTheme === 'light' && state.lightImages.length === 0) {
+        queueLightFrames();
       }
 
       playTone(nextTheme === 'dark' ? 440 : 660, 'sine', 0.1, 0.08);
@@ -1413,10 +1487,10 @@ app.post('/api/care/ntfy', async (req, res) => {
   ];
 
   if (flightViewport) {
-    flightViewport.addEventListener('mousemove', (e) => {
+    function handleFlightAim(clientX, clientY) {
       const rect = flightViewport.getBoundingClientRect();
-      const normX = (e.clientX - rect.left) / rect.width - 0.5;
-      const normY = (e.clientY - rect.top) / rect.height - 0.5;
+      const normX = Math.max(-0.5, Math.min(0.5, (clientX - rect.left) / rect.width - 0.5));
+      const normY = Math.max(-0.5, Math.min(0.5, (clientY - rect.top) / rect.height - 0.5));
 
       pitch = -normY * 35;
       roll = normX * 40;
@@ -1429,9 +1503,29 @@ app.post('/api/care/ntfy', async (req, res) => {
       if (flightTargetBox) {
         flightTargetBox.style.transform = `translate(calc(-50% + ${normX * 50}px), calc(-50% + ${normY * 40}px))`;
       }
+    }
+
+    flightViewport.addEventListener('mousemove', (e) => {
+      handleFlightAim(e.clientX, e.clientY);
     });
 
-    const triggerFlightAction = () => {
+    // Touch controls: Prevents whole page scrolling while steering aircraft on mobile
+    flightViewport.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) {
+        e.preventDefault();
+        handleFlightAim(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    flightViewport.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        e.preventDefault();
+        handleFlightAim(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    const triggerFlightAction = (e) => {
+      if (e && e.type === 'touchstart') e.preventDefault();
       targetLocked = !targetLocked;
       if (targetLocked) {
         playTone(1760, 'sine', 0.15, 0.15);

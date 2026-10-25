@@ -103,12 +103,17 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-normal), color var(--transition-normal);
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: clip; /* Modern standard: prevents horizontal wobble on mobile without breaking position: sticky */
+  width: 100%;
+  max-width: 100%;
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   line-height: 1.6;
 }
 
@@ -759,17 +764,21 @@ button {
 
 /* Sticky Canvas Viewport (100% focused on 3D rotation) */
 .canvas-sticky-container {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--canvas-bg);
   z-index: 10;
+  touch-action: pan-y;
 }
 
 .ambient-glow {
@@ -909,11 +918,13 @@ button {
   position: relative;
   z-index: 25;
   pointer-events: none;
+  margin-top: -100vh;
+  margin-top: -100dvh;
 }
 
 /* Phase 1: Pure 3D Scrub Runway */
 .scrub-runway-spacer {
-  height: 240vh;
+  height: 220vh;
 }
 
 #zoom-tour-marker {
@@ -1429,6 +1440,7 @@ button {
   background: var(--bg-primary);
   border: 1.5px solid var(--glass-border);
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45);
+  touch-action: manipulation;
 }
 
 .dino-canvas {
@@ -2480,6 +2492,9 @@ button {
   background: #020713;
   border: 1px solid var(--glass-border);
   cursor: crosshair;
+  touch-action: none; /* Prevents whole-page scrolling while steering flight simulator on touch screens */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .cockpit-canvas {
@@ -3637,6 +3652,9 @@ button {
 /* --------------------------------------------------------------------------
    18. RESPONSIVE BREAKPOINTS
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   18. RESPONSIVE BREAKPOINTS & MOBILE PERFORMANCE SYSTEM
+   -------------------------------------------------------------------------- */
 @media (max-width: 1100px) {
   .nav-menu { display: none; }
   .mobile-hamburger { display: flex; }
@@ -3688,78 +3706,497 @@ button {
 }
 
 @media (max-width: 768px) {
+  /* Layout & Container Constraints: Zero Horizontal Overflow */
+  html, body {
+    max-width: 100vw;
+    overflow-x: clip;
+  }
+
+  .section-container {
+    padding: 52px 14px;
+    max-width: 100%;
+  }
+
+  .section-header-center {
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-size: clamp(1.45rem, 5.5vw, 1.85rem);
+    line-height: 1.25;
+  }
+
+  .section-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .section-eyebrow {
+    font-size: 0.68rem;
+  }
+
+  /* Header Compact Mobile Styling */
+  .site-header {
+    padding: 10px 14px;
+  }
+
+  .header-container {
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+
+  .brand-name {
+    font-size: 1.15rem;
+  }
+
+  .header-actions .primary-cta {
+    display: none; /* Hide in sticky header to prevent overflow; readily available in mobile drawer */
+  }
+
+  .theme-switch-btn .theme-label {
+    display: none;
+  }
+
+  .theme-switch-btn {
+    padding: 6px 10px;
+  }
+
+  /* Hero Intro Floating Card */
   .hero-top-intro {
-    top: 76px;
-    padding: 22px 18px 18px 18px;
+    top: 66px;
+    width: calc(100% - 24px);
+    max-width: 480px;
+    padding: 18px 14px 14px 14px;
     border-radius: 20px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
   
+  .hero-chip {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    margin-bottom: 8px;
+  }
+
   .hero-main-title {
-    font-size: 1.85rem;
+    font-size: clamp(1.35rem, 5.4vw, 1.75rem);
+    line-height: 1.24;
+    margin-bottom: 8px;
   }
-  
+
+  .hero-main-subtitle {
+    font-size: 0.82rem;
+    line-height: 1.42;
+    margin-bottom: 12px;
+  }
+
+  .hero-metrics-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 10px 0 14px 0;
+  }
+
+  .hero-metric-divider {
+    display: none;
+  }
+
+  .metric-big-num {
+    font-size: 1.35rem;
+  }
+
+  .metric-sub-label {
+    font-size: 0.65rem;
+    line-height: 1.25;
+  }
+
+  .hero-scroll-cue {
+    font-size: 0.7rem;
+    margin-top: 4px;
+  }
+
+  /* Responsive 3D Scrolly Runway & Zoom Cards */
+  .scrub-runway-spacer {
+    height: 160vh; /* Responsive scrub runway: eliminates sluggish endless swiping on mobile */
+  }
+
+  .zoom-steps-container {
+    padding-bottom: 12vh;
+  }
+
   .zoom-scroll-step {
     justify-content: center;
-    padding: 0 16px;
-    min-height: 100vh;
+    padding: 0 12px;
+    min-height: 85vh;
   }
   
   .zoom-step-card {
-    max-width: 96%;
-    padding: 24px 20px;
+    max-width: 100%;
+    padding: 20px 16px;
     margin-top: auto;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .step-card-title {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+  }
+
+  .step-card-desc {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+
+  .step-specs-list li {
+    font-size: 0.78rem;
   }
 
   .camera-target-reticle {
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
   }
   
-  .blink-action-bar, .belt-states-grid, .app-tiles-matrix {
+  /* Blink Lab & Telemetry */
+  .blink-lab-workspace {
+    padding: 16px 12px;
+  }
+
+  .blink-action-bar {
     grid-template-columns: 1fr !important;
   }
 
-  .app-main-tile.settings-hub-tile {
-    grid-column: span 1 !important;
+  .accessible-tiles-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
+  .assist-tile {
+    padding: 12px 8px;
+  }
+
+  .assist-tile .tile-icon {
+    font-size: 1.4rem;
+  }
+
+  .assist-tile .tile-name {
+    font-size: 0.8rem;
+  }
+
+  .assist-tile .tile-hint {
+    font-size: 0.65rem;
+  }
+
+  .pipeline-status-box {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    padding: 10px 12px;
+    font-size: 0.68rem;
+  }
+
+  .pipeline-arrow {
+    display: none;
+  }
+
+  .belt-states-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .belt-unit-graphic {
+    padding: 14px 8px;
+  }
+
+  .belt-pod-housing {
+    min-width: 140px;
+    padding: 12px 14px;
+  }
+
+  /* 360° Cockpit Flight Sim & Dino Arcade */
   .arcade-tabs-bar {
     flex-direction: column;
+    gap: 8px;
   }
 
   .flight-viewport-container {
-    height: 260px;
+    height: 250px;
+    touch-action: none; /* Prevents whole-page scrolling while steering aircraft on mobile */
   }
 
   .hud-tape-box {
     display: none;
   }
 
+  .hud-compass-tape {
+    padding: 3px 12px;
+    font-size: 0.7rem;
+    gap: 8px;
+  }
+
+  .hud-bottom-telemetry {
+    font-size: 0.65rem;
+  }
+
+  .hud-bottom-telemetry .hud-stat-pill:not(:first-child) {
+    display: none;
+  }
+
+  .flight-controls-hint {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .flight-controls-hint button {
+    width: 100%;
+  }
+
+  .dino-canvas-container {
+    height: 200px;
+    touch-action: manipulation;
+  }
+
+  .dino-canvas {
+    height: 200px;
+  }
+
+  .therapeutics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Universal Companion App */
+  .app-tiles-matrix {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px;
+  }
+
+  .app-main-tile {
+    padding: 14px 10px;
+    font-size: 0.82rem;
+  }
+
+  .app-main-tile.settings-hub-tile {
+    grid-column: span 1 !important;
+  }
+
+  .companion-tiles-card, .gemini-expander-card {
+    padding: 18px 14px;
+  }
+
   .settings-tiles-grid {
     grid-template-columns: 1fr !important;
   }
-  
-  .sdg-cards-grid, .therapeutics-grid {
+
+  /* Calibration Wizard */
+  .wizard-steps-track {
+    gap: 4px;
+    padding: 0 4px;
+    margin-bottom: 24px;
+  }
+
+  .wizard-step-node .node-num {
+    width: 30px;
+    height: 30px;
+    font-size: 0.78rem;
+  }
+
+  .wizard-step-node .node-label {
+    display: none; /* Hide long text node labels on mobile to avoid horizontal squishing */
+  }
+
+  .wizard-step-line {
+    margin: 0 4px;
+    top: -6px;
+  }
+
+  .wizard-content-display {
+    padding: 18px 14px;
+    gap: 16px;
+  }
+
+  .wizard-buttons-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wizard-buttons-row button {
+    width: 100%;
+  }
+
+  /* Disruption Matrix & Empirical Benchmarks: Smooth Horizontal Swipe */
+  .comparison-matrix-wrapper {
+    padding: 16px 12px;
+  }
+
+  .comparison-table-container,
+  .benchmarks-table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .comparison-table,
+  .benchmark-table {
+    min-width: 560px; /* Swipable table interior without causing whole-page horizontal expansion */
+  }
+
+  .comparison-table th, .comparison-table td,
+  .benchmark-table th, .benchmark-table td {
+    padding: 10px 12px;
+    font-size: 0.78rem;
+  }
+
+  .market-numbers-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Open Firmware & Python Studio */
+  .code-studio-workspace {
+    padding: 16px 12px;
+  }
+
+  .code-editor-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .code-tabs-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding-bottom: 6px;
+    max-width: 100%;
+  }
+
+  .code-tab-btn {
+    white-space: nowrap;
+    font-size: 0.72rem;
+    padding: 6px 10px;
+    flex-shrink: 0;
+  }
+
+  .run-sim-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .code-view-container {
+    padding: 12px;
+    max-height: 220px;
+  }
+
+  .code-pre {
+    font-size: 0.72rem;
+  }
+
+  .terminal-bar {
+    font-size: 0.65rem;
+    padding: 8px 12px;
+  }
+
+  .terminal-log {
+    font-size: 0.68rem;
+    max-height: 120px;
+    padding: 10px 12px;
+  }
+
+  /* BOM Itemized List */
+  .bom-row {
+    grid-template-columns: 1fr 45px 75px;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  .bom-row.header {
+    font-size: 0.68rem;
+  }
+
+  .bom-row .total-price {
+    font-size: 1rem;
+  }
+
+  /* Settings Modal Card */
+  .settings-modal-card {
+    max-width: 95vw;
+    max-height: 90vh;
+    padding: 18px 14px;
+    overflow-y: auto;
+  }
+
+  /* SDGs, Creator & Footer */
+  .sdg-cards-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
   
   .creator-spotlight-card {
-    padding: 28px 20px;
+    padding: 24px 16px;
   }
   
   .partner-cta-actions {
     flex-direction: column;
+    gap: 10px;
+  }
+
+  .partner-cta-actions .cta-pill-button {
+    width: 100%;
   }
   
   .footer-links-group {
     flex-direction: column;
-    gap: 32px;
+    gap: 24px;
   }
   
   .footer-bottom {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  /* Global Floating SFX & Settings Hub */
+  .global-floating-controls {
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 990;
+  }
+
+  .glass-pill-btn {
+    padding: 7px 12px;
+    font-size: 0.72rem;
+    gap: 6px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+/* Extra-narrow devices (< 400px) */
+@media (max-width: 400px) {
+  .hero-metrics-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .app-tiles-matrix {
+    grid-template-columns: 1fr !important;
+  }
+
+  .accessible-tiles-grid {
+    grid-template-columns: 1fr;
   }
 }
 

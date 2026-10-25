@@ -1,0 +1,24 @@
+# IRIS FINALE - Complete Project Requirements
+# Generated automatically after scanning all subprojects
+
+# Computer Vision & Eye Tracking (IRIS EYE PYTHON)
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+mediapipe==0.10.14
+numpy>=1.24.0
+
+# Mouse Automation & Autoclicker (IRIS AUTO BUTTON CLICK / IRIS 3 SEC AUTO)
+pyautogui>=0.9.54
+
+# Image & Frame Optimization (IRIS WEBSITE FINALE)
+pillow>=10.0.0
+
+# Presentation & Kiosk Generation (IRIS KIOSK PPT)
+python-pptx>=1.0.0
+xlsxwriter>=3.2.0
+lxml>=5.0.0
+typing-extensions>=4.10.0
+
+# Additional dependencies
+matplotlib>=3.8.0
+sounddevice>=0.5.0
