@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import FixedBackButton from '@/components/FixedBackButton';
+import IrisBackButton from '@/components/IrisBackButton';
 import {
   ChevronLeft,
   AlertTriangle,
@@ -443,6 +443,7 @@ export default function CaretakerAppPage() {
       >
         {/* Left: Clock, Back Button & Title Stack */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <IrisBackButton href="/" label="BACK TO HOME" position="static" />
           <span
             style={{
               fontFamily: "'JetBrains Mono', monospace",
@@ -1104,8 +1105,6 @@ export default function CaretakerAppPage() {
         </div>
       )}
 
-      {/* STANDARDIZED UNIFIED FIXED BACK BUTTON */}
-      <FixedBackButton href="/" label="BACK TO HOME" />
     </div>
   );
 }

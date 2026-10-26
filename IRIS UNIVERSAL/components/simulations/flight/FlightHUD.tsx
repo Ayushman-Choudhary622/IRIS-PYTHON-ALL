@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import IrisBackButton from '@/components/IrisBackButton';
 import { useIrisInput } from '@/lib/input/IrisInputContext';
 import {
   ChevronLeft,
@@ -170,41 +171,15 @@ export default function FlightHUD({
       {/* ===================================================================== */}
       {/* 1. UPPER-LEFT STANDARD BACK TO ENTERTAINMENT BUTTON                  */}
       {/* ===================================================================== */}
-      <Link
+      <IrisBackButton
         href="/entertainment"
-        onClick={(e) => {
-          if (onExit) onExit();
-        }}
-        title="Return to Entertainment Menu"
-        style={{
-          position: 'fixed',
-          top: 'clamp(12px, 2.2vh, 26px)',
-          left: 'clamp(16px, 3.5vw, 48px)',
-          zIndex: 9999,
-          pointerEvents: 'auto',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '10px',
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
-          border: '2px solid #06b6d4',
-          borderRadius: '16px',
-          padding: '10px 24px',
-          color: '#ffffff',
-          fontSize: '15px',
-          fontWeight: 800,
-          letterSpacing: '0.06em',
-          textTransform: 'uppercase',
-          textDecoration: 'none',
-          boxShadow: '0 0 24px rgba(6, 182, 212, 0.45), 0 4px 14px rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(12px)',
-          cursor: 'pointer',
-          outline: 'none',
-          transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        <ChevronLeft size={22} strokeWidth={2.6} style={{ color: '#06b6d4' }} />
-        <span>BACK TO ENTERTAINMENT</span>
-      </Link>
+        label="EXIT SIMULATION"
+        subtitle="Return to Previous Screen"
+        accentColor="#06b6d4"
+        showHomeShortcut={true}
+        position="fixed"
+        onClick={onExit}
+      />
 
       {/* ===================================================================== */}
       {/* 2. TOP BAR: FLIGHT TELEMETRY TAPE & FULLSCREEN TOGGLE                 */}

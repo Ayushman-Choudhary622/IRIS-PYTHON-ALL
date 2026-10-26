@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import IrisBackButton from '@/components/IrisBackButton';
 import {
   Home,
   ChevronLeft,
@@ -274,47 +275,7 @@ export default function CommunicationPage() {
       >
         {/* Left: Bigger Back to Home Button with Home Logo & Time Display */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifySelf: 'start' }}>
-          <Link
-            href="/"
-            onClick={() => {
-              if (interfaceSounds) playClickSound((volume / 100) * 0.4);
-            }}
-            title="Return to IRIS Home Dashboard"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              backgroundColor: 'rgba(15, 23, 42, 0.95)',
-              border: '2px solid #38bdf8',
-              borderRadius: '16px',
-              padding: '10px 24px',
-              color: '#ffffff',
-              fontSize: '15px',
-              fontWeight: 800,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              boxShadow: '0 0 24px rgba(56, 189, 248, 0.45), 0 4px 14px rgba(0, 0, 0, 0.6)',
-              backdropFilter: 'blur(12px)',
-              cursor: 'pointer',
-              transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(2, 132, 199, 0.3)';
-              e.currentTarget.style.borderColor = '#7dd3fc';
-              e.currentTarget.style.boxShadow = '0 0 32px rgba(56, 189, 248, 0.7), 0 6px 20px rgba(0, 0, 0, 0.7)';
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.03)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
-              e.currentTarget.style.borderColor = '#38bdf8';
-              e.currentTarget.style.boxShadow = '0 0 24px rgba(56, 189, 248, 0.45), 0 4px 14px rgba(0, 0, 0, 0.6)';
-              e.currentTarget.style.transform = 'none';
-            }}
-          >
-            <Home size={22} strokeWidth={2.4} style={{ color: '#38bdf8' }} />
-            <span>BACK TO HOME</span>
-          </Link>
+          <IrisBackButton href="/" label="BACK TO HOME" position="static" />
 
           <span
             style={{

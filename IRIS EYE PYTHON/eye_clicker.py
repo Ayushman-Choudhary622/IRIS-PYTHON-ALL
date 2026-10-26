@@ -1060,6 +1060,17 @@ def run(camera_index=0, initial_mode=None, initial_eye=None, initial_canvas=None
     print("   [Q] / [ESC] Quit")
     print("=" * 68)
 
+    try:
+        print("\n Select User Type:")
+        print("   [1] New User")
+        print("   [2] Old User")
+        input(" Enter choice (1/2): ")
+    except (EOFError, KeyboardInterrupt):
+        pass
+    except Exception:
+        pass
+    print()
+
     cap = cv2.VideoCapture(camera_index)
     if not cap.isOpened():
         print(f"Error: Unable to open camera index {camera_index}!")
@@ -1167,7 +1178,8 @@ def run(camera_index=0, initial_mode=None, initial_eye=None, initial_canvas=None
             # 2. Frame Preparation: Plain White Canvas OR Camera Feed
             now = time.time()
             click_flash = (now < detector.click_flash_until)
-            active_thresh = detector.calibrated_threshold or (detector.baseline * (1.0 - detector.drop_ratio))
+            baseline_val = detector.baseline if detector.baseline is not None else 0.28
+            active_thresh = detector.calibrated_threshold or (baseline_val * (1.0 - detector.drop_ratio))
 
             if white_canvas_mode:
                 display_frame = CanvasEyeRenderer.render(
