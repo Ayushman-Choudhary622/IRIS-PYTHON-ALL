@@ -419,7 +419,7 @@ export default function CaretakerAppPage() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: 'clamp(10px, 1.8vh, 18px) clamp(16px, 2.5vw, 36px)',
+        padding: 'clamp(12px, 2.2vh, 26px) clamp(16px, 3.5vw, 48px)',
         boxSizing: 'border-box',
         overflow: 'hidden',
         userSelect: 'none',
@@ -435,8 +435,6 @@ export default function CaretakerAppPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          maxWidth: '1360px',
-          margin: '0 auto',
           padding: '2px 4px',
           zIndex: 20,
         }}
@@ -447,10 +445,11 @@ export default function CaretakerAppPage() {
           <span
             style={{
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: '15px',
-              fontWeight: 700,
-              color: '#e2e8f0',
-              letterSpacing: '0.02em',
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#ffffff',
+              letterSpacing: '0.04em',
+              textShadow: '0 0 12px rgba(56, 189, 248, 0.5)',
             }}
           >
             {timeStr}

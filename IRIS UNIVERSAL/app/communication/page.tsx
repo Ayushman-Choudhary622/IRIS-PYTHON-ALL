@@ -251,7 +251,7 @@ export default function CommunicationPage() {
         display: 'flex',
         flexDirection: 'column',
         gap: 'clamp(8px, 1.2vh, 14px)',
-        padding: 'clamp(8px, 1.2vh, 16px) clamp(12px, 2vw, 32px)',
+        padding: 'clamp(12px, 2.2vh, 26px) clamp(16px, 3.5vw, 48px)',
         boxSizing: 'border-box',
         overflow: 'hidden',
         userSelect: 'none',
@@ -267,23 +267,22 @@ export default function CommunicationPage() {
           gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
           width: '100%',
-          maxWidth: '100%',
-          margin: '0',
           padding: '2px 4px',
           flexShrink: 0,
         }}
       >
-        {/* Left: Bigger Back to Home Button with Home Logo & Time Display */}
+        {/* Left: Standard Upper-Left Back Button & Time */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifySelf: 'start' }}>
           <IrisBackButton href="/" label="BACK TO HOME" position="static" />
 
           <span
             style={{
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: '16px',
-              fontWeight: 700,
-              color: '#94a3b8',
-              letterSpacing: '0.02em',
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#ffffff',
+              letterSpacing: '0.04em',
+              textShadow: '0 0 12px rgba(56, 189, 248, 0.5)',
             }}
           >
             {timeStr}

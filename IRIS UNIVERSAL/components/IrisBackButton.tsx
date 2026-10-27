@@ -65,8 +65,8 @@ export default function IrisBackButton({
   const containerStyle: React.CSSProperties = position === 'fixed'
     ? {
         position: 'fixed',
-        top: 'clamp(14px, 2.2vh, 26px)',
-        left: 'clamp(16px, 3vw, 44px)',
+        top: 'calc(clamp(12px, 2.2vh, 26px) + 2px)',
+        left: 'calc(clamp(16px, 3.5vw, 48px) + 4px)',
         zIndex: 99999,
         display: 'inline-flex',
         alignItems: 'center',
