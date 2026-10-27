@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6KCDSklwM2_LD3UCP-lIU7YLv4k-VDv8ocFwqAo_1At6w';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 // Priority order for Gemini models with active quota
 const CANDIDATE_MODELS = [
-  'gemini-3.5-flash-lite',
-  'gemini-3.5-flash',
   'gemini-2.5-flash',
+  'gemini-1.5-flash',
 ];
 
 export async function POST(req: Request) {
@@ -27,8 +26,9 @@ export async function POST(req: Request) {
 
     const trimmedKeywords = keywords.trim();
 
-    // 1. Attempt generation with Gemini models
-    for (const model of CANDIDATE_MODELS) {
+    // 1. Attempt generation with Gemini models if API key is configured
+    if (GEMINI_API_KEY) {
+      for (const model of CANDIDATE_MODELS) {
       try {
         const prompt = `Think you are a paralysed person. The words that I am giving are being spoken by you. Then how would a normal person speak them?
 Convert the given keywords into a single, natural, polite sentence that a normal person would speak in the first person ("I" or "me") to express what I want or need to say to a caregiver or family member.
@@ -88,6 +88,7 @@ Sentence:`;
         console.warn(`Error calling Gemini model ${model}:`, modelErr);
       }
     }
+  }
 
     // 2. High-fidelity Rule-based Contextual Fallback (Instant & Resilient)
     const fallbackSentence = generateSmartFallback(trimmedKeywords);
